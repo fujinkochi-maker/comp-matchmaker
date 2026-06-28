@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Trophy, Swords, Users, BarChart3, Rss } from "lucide-react";
 import JB from "@/assets/JB.webp";
+import { getGuildInfo } from "@/lib/guild-info";
 import {
   Sidebar,
   SidebarContent,
@@ -30,10 +31,7 @@ export function AppSidebar() {
   const [online, setOnline] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch("/api/guild-info")
-      .then((r) => r.json())
-      .then((d) => setOnline(d.online))
-      .catch(() => {});
+    getGuildInfo().then((d) => setOnline(d.online)).catch(() => {});
   }, []);
 
   return (
