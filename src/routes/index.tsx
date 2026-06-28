@@ -276,7 +276,7 @@ function DiscordCard() {
           asChild
           className="w-full gap-2 bg-[#5865F2] text-white hover:bg-[#4752c4]"
         >
-          <a href="https://discord.gg/jailbird" target="_blank" rel="noopener noreferrer">
+          <a href="https://discord.gg/F6ZfYevYXd" target="_blank" rel="noopener noreferrer">
             <ExternalLink className="h-4 w-4" /> Join Discord
           </a>
         </Button>

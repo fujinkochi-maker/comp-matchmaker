@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Trophy, Swords, Users, BarChart3, Rss } from "lucide-react";
 import JB from "@/assets/JB.webp";
@@ -26,6 +27,14 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isActive = (url: string, exact?: boolean) =>
     exact ? pathname === url : pathname === url || pathname.startsWith(url + "/");
+  const [online, setOnline] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/guild-info")
+      .then((r) => r.json())
+      .then((d) => setOnline(d.online))
+      .catch(() => {});
+  }, []);
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -71,7 +80,7 @@ export function AppSidebar() {
       <SidebarFooter className="px-3 py-3 text-[10px] uppercase tracking-wider text-muted-foreground group-data-[collapsible=icon]:hidden">
         <div className="flex items-center gap-2">
           <Users className="h-3 w-3 text-success" />
-          <span>4,218 online</span>
+          <span>{online !== null ? `${online.toLocaleString()} online` : "—"}</span>
         </div>
       </SidebarFooter>
     </Sidebar>
