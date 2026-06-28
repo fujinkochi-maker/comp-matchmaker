@@ -35,9 +35,9 @@ export const Route = createFileRoute("/matches/$id")({
       <div className="p-10 text-center text-muted-foreground">Match not found.</div>
     </AppShell>
   ),
-  errorComponent: () => (
+  errorComponent: ({ error }) => (
     <AppShell>
-      <div className="p-10 text-center text-muted-foreground">Couldn't load this match.</div>
+      <div className="p-10 text-center text-muted-foreground">Couldn't load this match. {(error as Error)?.message}</div>
     </AppShell>
   ),
   component: MatchPage,
