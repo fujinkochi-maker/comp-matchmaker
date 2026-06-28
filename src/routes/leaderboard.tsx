@@ -43,7 +43,7 @@ function Leaderboard() {
             <div className="section-title flex items-center gap-2">
               <Trophy className="h-3.5 w-3.5" /> Leaderboard
             </div>
-            <h1 className="text-display mt-1 text-3xl font-bold">Season 4 Ladder</h1>
+            <h1 className="text-display mt-1 text-3xl font-bold">Season 1 Ladder</h1>
             <p className="text-sm text-muted-foreground">
               Live standings across all regions · Updated every match
             </p>

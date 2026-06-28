@@ -72,7 +72,7 @@ function PlayerPage() {
                 <RankBadge elo={player.elo} />
               </div>
             </div>
-            <Badge className="bg-primary/15 text-primary hover:bg-primary/20">Season 4</Badge>
+            <Badge className="bg-primary/15 text-primary hover:bg-primary/20">Season 1</Badge>
           </div>
         </Card>
 
