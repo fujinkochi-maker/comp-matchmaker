@@ -61,6 +61,15 @@ export async function getEloHistory(discordId: string): Promise<EloHistoryRow[]>
   return (data ?? []) as EloHistoryRow[];
 }
 
+export async function getPlayersByIds(ids: string[]): Promise<PlayerRow[]> {
+  if (ids.length === 0) return [];
+  const { data } = await supabase
+    .from("players")
+    .select("discord_id, username, avatar_url, elo, wins, losses")
+    .in("discord_id", ids);
+  return (data ?? []) as PlayerRow[];
+}
+
 export async function getRecentMatches(limit = 5): Promise<MatchRow[]> {
   const { data } = await supabase
     .from("matches")
