@@ -61,6 +61,16 @@ export async function getEloHistory(discordId: string): Promise<EloHistoryRow[]>
   return (data ?? []) as EloHistoryRow[];
 }
 
+export async function getRecentMatches(limit = 5): Promise<MatchRow[]> {
+  const { data } = await supabase
+    .from("matches")
+    .select("id, region, match_number, atk_team, def_team, selected_map, winner, elo_changes, created_at")
+    .eq("status", "ended")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data ?? []) as MatchRow[];
+}
+
 export function avatarUrl(row: PlayerRow): string {
   if (row.avatar_url) return `https://cdn.discordapp.com/avatars/${row.discord_id}/${row.avatar_url}.png`;
   return `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${row.discord_id}`;

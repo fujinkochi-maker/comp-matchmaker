@@ -1,21 +1,31 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { MessageCircle, Trophy, Swords, Users, Flame, ArrowUpRight } from "lucide-react";
+import {
+  MessageCircle,
+  Trophy,
+  Swords,
+  Users,
+  Flame,
+  Headphones,
+  Map,
+  BarChart3,
+  ExternalLink,
+} from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { RankBadge } from "@/components/rank-badge";
-import { getPlayers, avatarUrl } from "@/lib/supabase-queries";
+import { getPlayers, getRecentMatches, avatarUrl } from "@/lib/supabase-queries";
 import { toast } from "sonner";
 import hero from "@/assets/hero.jpg";
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const all = await getPlayers();
+    const [all, recent] = await Promise.all([getPlayers(), getRecentMatches(5)]);
     const top = all.slice(0, 6);
-    return { top, total: all.length };
+    return { top, recent, total: all.length };
   },
   head: () => ({
     meta: [
@@ -29,7 +39,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { top, total } = Route.useLoaderData();
+  const { top, recent, total } = Route.useLoaderData();
 
   return (
     <AppShell>
@@ -37,9 +47,12 @@ function Home() {
         <div className="space-y-6 min-w-0">
           <Hero />
           <LiveStats total={total} />
+          <HowItWorks />
+          {recent.length > 0 && <RecentMatches matches={recent} />}
         </div>
         <aside className="space-y-6">
           <TopPlayersCard top={top} />
+          <DiscordCard />
         </aside>
       </div>
     </AppShell>
@@ -100,9 +113,9 @@ function Hero() {
 function LiveStats({ total }: { total: number }) {
   const stats = [
     { label: "Tracked Players", value: total, icon: Users, color: "text-success" },
-    { label: "Live Matches", value: "—", icon: Swords, color: "text-primary" },
-    { label: "Status", value: "Active", icon: Flame, color: "text-warning" },
-    { label: "Queue", value: "Discord", icon: Trophy, color: "text-chart-3" },
+    { label: "Seasons", value: "1", icon: Trophy, color: "text-chart-3" },
+    { label: "Status", value: "Live", icon: Flame, color: "text-warning" },
+    { label: "Queue", value: "Discord", icon: Headphones, color: "text-primary" },
   ];
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -116,6 +129,84 @@ function LiveStats({ total }: { total: number }) {
         </Card>
       ))}
     </div>
+  );
+}
+
+const steps = [
+  {
+    icon: MessageCircle,
+    title: "Join Discord",
+    desc: "Be in the server during active hours and make sure you have a region role assigned.",
+  },
+  {
+    icon: Headphones,
+    title: "Queue Up",
+    desc: "Join the Queue voice channel with 9 other players. The bot detects you automatically.",
+  },
+  {
+    icon: Swords,
+    title: "Get Matched",
+    desc: "Teams are created and channels are spawned. Vote for a map to play.",
+  },
+  {
+    icon: BarChart3,
+    title: "Track Results",
+    desc: "Winners gain +60–100 ELO, losers lose –16–30. Watch your rank climb on the leaderboard.",
+  },
+];
+
+function HowItWorks() {
+  return (
+    <Card className="border-border bg-card p-5">
+      <div className="section-title mb-5">How It Works</div>
+      <div className="grid gap-5 sm:grid-cols-2">
+        {steps.map((s) => (
+          <div key={s.title} className="flex gap-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <s.icon className="h-5 w-5 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-semibold">{s.title}</div>
+              <p className="mt-0.5 text-xs text-muted-foreground">{s.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function RecentMatches({ matches }: { matches: Awaited<ReturnType<typeof getRecentMatches>> }) {
+  return (
+    <Card className="border-border bg-card p-5">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="section-title">Recent Matches</div>
+        <Link to="/matches" className="text-xs text-muted-foreground hover:text-primary">
+          View all
+        </Link>
+      </div>
+      <div className="space-y-2">
+        {matches.map((m) => (
+          <Link
+            key={m.id}
+            to="/matches/$id"
+            params={{ id: m.id }}
+            className="flex items-center gap-3 rounded-md p-2 transition hover:bg-muted/50"
+          >
+            <Map className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="min-w-0 flex-1 text-sm">
+              <span className="font-medium">{m.selected_map ?? "Unknown map"}</span>
+              <span className="text-muted-foreground">
+                {" "}· #{m.match_number} · {m.region}
+              </span>
+            </div>
+            <Badge variant="outline" className="text-[10px] capitalize">
+              {m.winner ?? "?"}
+            </Badge>
+          </Link>
+        ))}
+      </div>
+    </Card>
   );
 }
 
@@ -156,6 +247,30 @@ function TopPlayersCard({ top }: { top: Awaited<ReturnType<typeof getPlayers>> }
           <p className="py-6 text-center text-sm text-muted-foreground">No tracked players yet.</p>
         )}
       </div>
+    </Card>
+  );
+}
+
+function DiscordCard() {
+  return (
+    <Card className="border-border bg-card overflow-hidden">
+      <div className="bg-[#5865F2] p-4 text-center">
+        <MessageCircle className="mx-auto h-8 w-8 text-white" />
+      </div>
+      <CardContent className="space-y-3 p-4 text-center">
+        <div className="text-sm font-semibold">Join the Community</div>
+        <p className="text-xs text-muted-foreground">
+          Queue up, compete, and track your progress — all through Discord.
+        </p>
+        <Button
+          asChild
+          className="w-full gap-2 bg-[#5865F2] text-white hover:bg-[#4752c4]"
+        >
+          <a href="https://discord.gg/jailbird" target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="h-4 w-4" /> Join Discord
+          </a>
+        </Button>
+      </CardContent>
     </Card>
   );
 }
