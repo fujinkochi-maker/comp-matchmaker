@@ -1,11 +1,12 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Crown, MapPin, Skull, Plus } from "lucide-react";
+import { ArrowLeft, Crown, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/lib/supabase";
 import { getPlayersByIds, avatarUrl } from "@/lib/supabase-queries";
+import { getMapImage } from "@/lib/maps";
 
 export const Route = createFileRoute("/matches/$id")({
   loader: async ({ params }) => {
@@ -60,18 +61,36 @@ function MatchPage() {
           </Link>
         </Button>
 
-        <Card className="overflow-hidden border-border bg-card p-6">
-          <div className="flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-wider text-muted-foreground">
-            <Badge variant="outline" className="border-border text-[10px]">
-              Match #{match.match_number}
-            </Badge>
-            <span className="inline-flex items-center gap-1">
-              <MapPin className="h-3 w-3" /> {match.selected_map ?? "Voting"}
-            </span>
-            <span>· {match.region}</span>
+        <Card className="overflow-hidden border-border bg-card">
+          {(() => {
+            const img = getMapImage(match.selected_map);
+            return img ? (
+              <div className="relative h-48 overflow-hidden">
+                <img src={img} alt={match.selected_map ?? ""} className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <Badge variant="outline" className="border-border/60 bg-background/60 text-[10px] backdrop-blur-sm">
+                    Match #{match.match_number}
+                  </Badge>
+                  <h2 className="text-display mt-2 text-2xl font-extrabold text-white drop-shadow-lg">
+                    {match.selected_map ?? "Voting"}
+                  </h2>
+                </div>
+              </div>
+            ) : (
+              <div className="p-6">
+                <Badge variant="outline" className="border-border text-[10px]">
+                  Match #{match.match_number}
+                </Badge>
+                <h2 className="text-display mt-2 text-2xl font-extrabold">{match.selected_map ?? "Voting"}</h2>
+              </div>
+            );
+          })()}
+          <div className="flex flex-wrap items-center gap-3 border-t border-border px-6 py-3 text-[10px] uppercase tracking-wider text-muted-foreground">
+            <span>{match.region}</span>
             <span>· {new Date(match.created_at).toLocaleString()}</span>
           </div>
-          <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 border-t border-border p-6">
             <div className={`text-right ${winner === "atk" ? "text-success" : "text-muted-foreground"}`}>
               <div className="text-[10px] uppercase tracking-wider">ATK</div>
               <div className="text-display text-3xl font-extrabold">

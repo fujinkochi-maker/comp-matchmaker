@@ -3,6 +3,7 @@ import { Swords } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
+import { getMapImage } from "@/lib/maps";
 
 export const Route = createFileRoute("/matches/")({
   loader: async () => {
@@ -32,34 +33,32 @@ function MatchesList() {
       <div className="grid gap-3 md:grid-cols-2">
         {matches.map((m) => (
           <Link key={m.id} to="/matches/$id" params={{ id: m.id }}>
-            <Card className="group border-border bg-card p-4 transition hover:border-primary/50">
-              <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
-                <div className="flex items-center gap-2">
+            <Card className="group flex h-24 overflow-hidden border-border bg-card transition hover:border-primary/50">
+              {(() => {
+                const img = getMapImage(m.selected_map);
+                return img ? (
+                  <div className="relative w-36 shrink-0 overflow-hidden">
+                    <img src={img} alt={m.selected_map ?? ""} className="h-full w-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background" />
+                  </div>
+                ) : null;
+              })()}
+              <div className="flex flex-1 flex-col justify-center p-4">
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground">
                   <Badge variant="outline" className="border-border text-[10px]">
                     #{m.match_number}
                   </Badge>
                   <span>{m.region}</span>
-                </div>
-                <Badge className={m.status === "active" ? "bg-warning/15 text-warning" : "bg-muted text-muted-foreground"}>
-                  {m.status}
-                </Badge>
-              </div>
-              <div className="mt-3 flex items-center justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <div className="text-display truncate text-lg font-bold">{m.selected_map ?? "Voting"}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {new Date(m.created_at).toLocaleString()}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 font-display text-lg font-bold">
                   {m.winner ? (
                     <Badge className={m.winner === "atk" ? "bg-red-500/15 text-red-400" : "bg-blue-500/15 text-blue-400"}>
-                      {m.winner === "atk" ? "🔴 ATK" : "🔵 DEF"} Wins
+                      {m.winner === "atk" ? "ATK" : "DEF"} Wins
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="border-border">Pending</Badge>
                   )}
                 </div>
+                <div className="text-display mt-1 truncate text-base font-bold">{m.selected_map ?? "Voting"}</div>
+                <div className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleString()}</div>
               </div>
             </Card>
           </Link>

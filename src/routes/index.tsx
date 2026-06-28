@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { RankBadge } from "@/components/rank-badge";
 import { getPlayers, getRecentMatches, avatarUrl } from "@/lib/supabase-queries";
+import { getMapImage } from "@/lib/maps";
 import { toast } from "sonner";
 import hero from "@/assets/hero.jpg";
 
@@ -186,14 +187,22 @@ function RecentMatches({ matches }: { matches: Awaited<ReturnType<typeof getRece
         </Link>
       </div>
       <div className="space-y-2">
-        {matches.map((m) => (
+        {matches.map((m) => {
+          const img = getMapImage(m.selected_map);
+          return (
           <Link
             key={m.id}
             to="/matches/$id"
             params={{ id: m.id }}
             className="flex items-center gap-3 rounded-md p-2 transition hover:bg-muted/50"
           >
-            <Map className="h-4 w-4 text-muted-foreground shrink-0" />
+            {img ? (
+              <div className="h-10 w-16 shrink-0 overflow-hidden rounded">
+                <img src={img} alt={m.selected_map ?? ""} className="h-full w-full object-cover" />
+              </div>
+            ) : (
+              <Map className="h-4 w-4 text-muted-foreground shrink-0" />
+            )}
             <div className="min-w-0 flex-1 text-sm">
               <span className="font-medium">{m.selected_map ?? "Unknown map"}</span>
               <span className="text-muted-foreground">
@@ -204,7 +213,8 @@ function RecentMatches({ matches }: { matches: Awaited<ReturnType<typeof getRece
               {m.winner ?? "?"}
             </Badge>
           </Link>
-        ))}
+          );
+        })}
       </div>
     </Card>
   );
