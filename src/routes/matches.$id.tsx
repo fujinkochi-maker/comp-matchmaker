@@ -1,6 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Crown, MapPin, Skull, Plus } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,8 +48,7 @@ function MatchPage() {
   const eloChanges = (match.elo_changes as Record<string, number>) ?? {};
 
   return (
-    <AppShell>
-      <div className="space-y-6 p-4 lg:p-6">
+    <div className="space-y-6 p-4 lg:p-6">
         <Button
           asChild
           variant="ghost"
@@ -111,7 +109,6 @@ function MatchPage() {
           />
         </div>
       </div>
-    </AppShell>
   );
 }
 
