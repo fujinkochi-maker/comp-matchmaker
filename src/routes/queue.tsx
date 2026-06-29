@@ -67,8 +67,19 @@ function QueuePage() {
   }, [fetchQueue]);
 
   const inQueue = session ? players.some((p) => p.user_id === session.user_id) : false;
+  const myPlayer = session ? players.find((p) => p.user_id === session.user_id) : null;
   const count = players.length;
-  const needed = Math.max(0, 10 - count);
+  
+  function getTimeInQueue(joinedAt: string): string {
+    const now = new Date();
+    const joined = new Date(joinedAt);
+    const diffMs = now.getTime() - joined.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffSecs = Math.floor((diffMs % 60000) / 1000);
+    
+    if (diffMins > 0) return `${diffMins}m ${diffSecs}s`;
+    return `${diffSecs}s`;
+  }
 
   async function handleJoin() {
     if (!session) return;
@@ -111,17 +122,13 @@ function QueuePage() {
         <Card className="border-border bg-card p-6">
           <div className="mb-4 flex items-center justify-between">
             <span className="text-sm font-semibold text-muted-foreground">
-              {count} / 10 Players
+              {count} {count === 1 ? "Player" : "Players"} in Queue
             </span>
-            <span className="text-sm font-semibold text-primary">
-              {count >= 10 ? "Ready!" : `Need ${needed} more`}
-            </span>
-          </div>
-          <div className="mb-6 h-3 overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-primary transition-all duration-500"
-              style={{ width: `${Math.min(100, (count / 10) * 100)}%` }}
-            />
+            {myPlayer && (
+              <span className="text-sm font-semibold text-primary">
+                Queued for {getTimeInQueue(myPlayer.joined_at)}
+              </span>
+            )}
           </div>
 
           {!session ? (
