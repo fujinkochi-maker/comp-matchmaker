@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Trophy, Swords, Users, BarChart3, Rss } from "lucide-react";
+import { Home, Trophy, Swords, Users, BarChart3, Rss, ListOrdered } from "lucide-react";
 import caplLogo from "@/assets/CAPL.png";
 import { getGuildInfo } from "@/lib/guild-info";
 import {
@@ -18,6 +18,7 @@ import {
 
 const primary = [
   { title: "Home", url: "/", icon: Home, exact: true },
+  { title: "Queue", url: "/queue", icon: ListOrdered },
   { title: "Leaderboard", url: "/leaderboard", icon: Trophy },
   { title: "Matches", url: "/matches", icon: Swords },
   { title: "Track", url: "/track", icon: BarChart3 },
