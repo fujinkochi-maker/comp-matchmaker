@@ -87,14 +87,12 @@ function Hero() {
         </p>
         <div className="flex flex-wrap gap-3">
           <Button
-            onClick={() =>
-              toast("Discord login coming soon", {
-                description: "Connect your account to sync your matches.",
-              })
-            }
+            asChild
             className="gap-2 bg-[#5865F2] text-white hover:bg-[#4752c4]"
           >
-            <MessageCircle className="h-4 w-4" /> Connect Discord
+            <a href="/api/auth/discord">
+              <MessageCircle className="h-4 w-4" /> Connect Discord
+            </a>
           </Button>
           <Button
             asChild

@@ -29,8 +29,12 @@ function parseSession(): { user_id: string; username: string; avatar_url: string
   const parts = cookie.split(".");
   if (parts.length < 2) return null;
   try {
-    return JSON.parse(atob(parts[0]));
-  } catch {
+    // Handle both base64 and base64url encoding
+    const base64 = parts[0].replace(/-/g, '+').replace(/_/g, '/');
+    const decoded = atob(base64);
+    return JSON.parse(decoded);
+  } catch (e) {
+    console.error("Failed to parse session:", e);
     return null;
   }
 }
