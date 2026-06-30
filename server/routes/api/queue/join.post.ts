@@ -21,6 +21,18 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const matchesRes = await fetch(
+      `${url}/rest/v1/matches?select=atk_team,def_team,status&status=eq.active&guild_id=eq.${guildId}`,
+      { headers: { apikey: key, Authorization: `Bearer ${key}` } },
+    );
+    const matches = await matchesRes.json();
+    if (Array.isArray(matches) && matches.some((m: any) =>
+      (m.atk_team || []).includes(userId) || (m.def_team || []).includes(userId),
+    )) {
+      setResponseStatus(event, 409);
+      return { ok: false, error: "You are already in an active match." };
+    }
+
     await fetch(`${url}/rest/v1/web_queue`, {
       method: "POST",
       headers: {
