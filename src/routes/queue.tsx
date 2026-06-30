@@ -456,7 +456,7 @@ function QueuePage() {
                   })}
                 </div>
                 <div className="flex gap-3">
-                  {isPartyLeader && availableToInvite.length > 0 && (
+                  {isPartyLeader && (
                     <Button
                       onClick={() => setShowInviteModal(true)}
                       variant="outline"
