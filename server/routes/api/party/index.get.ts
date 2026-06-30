@@ -1,4 +1,4 @@
-import { defineEventHandler, getQuery, setResponseStatus } from "h3";
+import { defineEventHandler, getQuery } from "h3";
 
 function parseSession(event: any): { user_id: string; username: string; avatar_url: string } | null {
   const cookie = getCookie(event, "capl_session");
@@ -23,13 +23,13 @@ function getCookie(event: any, name: string): string | null {
 export default defineEventHandler(async (event) => {
   const session = parseSession(event);
   if (!session) {
-    setResponseStatus(event, 401);
     return { ok: false, error: "Not logged in" };
   }
 
   const guildId = (getQuery(event).guildId as string) || process.env.DISCORD_GUILD_ID;
   const url = process.env.VITE_SUPABASE_URL;
   const key = process.env.VITE_SUPABASE_ANON_KEY;
+
   if (!url || !key || !guildId) {
     return { ok: false, party: null, invites: [] };
   }
@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
     ) || null;
 
     return { ok: true, party, invites: Array.isArray(invites) ? invites : [] };
-  } catch {
-    return { ok: false, party: null, invites: [] };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || "Failed to fetch party", party: null, invites: [] };
   }
 });

@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody, setResponseStatus } from "h3";
+import { defineEventHandler, readBody } from "h3";
 
 function parseSession(event: any): { user_id: string; username: string; avatar_url: string } | null {
   const cookie = getCookie(event, "capl_session");
@@ -23,7 +23,6 @@ function getCookie(event: any, name: string): string | null {
 export default defineEventHandler(async (event) => {
   const session = parseSession(event);
   if (!session) {
-    setResponseStatus(event, 401);
     return { ok: false, error: "Not logged in" };
   }
 
@@ -34,19 +33,16 @@ export default defineEventHandler(async (event) => {
   const key = process.env.VITE_SUPABASE_ANON_KEY;
 
   if (!partyId || !targetUserId || !url || !key) {
-    setResponseStatus(event, 400);
     return { ok: false, error: "Missing required fields" };
   }
 
   if (targetUserId === session.user_id) {
-    setResponseStatus(event, 400);
     return { ok: false, error: "Cannot invite yourself" };
   }
 
   const headers = { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
 
   try {
-    // Verify party exists and caller is leader
     const partyRes = await fetch(
       `${url}/rest/v1/parties?guild_id=eq.${guildId}&id=eq.${partyId}&status=eq.active&select=*`,
       { headers: { ...headers, Accept: "application/json" } },
@@ -54,18 +50,14 @@ export default defineEventHandler(async (event) => {
     const parties = await partyRes.json();
     const party = Array.isArray(parties) ? parties[0] : null;
     if (!party || party.leader_id !== session.user_id) {
-      setResponseStatus(event, 403);
       return { ok: false, error: "Not your party" };
     }
 
-    // Check party size limit (3 max = leader + 2)
     const currentSize = 1 + (party.members?.length || 0);
     if (currentSize >= 3) {
-      setResponseStatus(event, 400);
       return { ok: false, error: "Party is full" };
     }
 
-    // Check target isn't already in a party
     const targetPartyRes = await fetch(
       `${url}/rest/v1/parties?guild_id=eq.${guildId}&status=eq.active&select=*`,
       { headers: { ...headers, Accept: "application/json" } },
@@ -75,22 +67,18 @@ export default defineEventHandler(async (event) => {
       (p: any) => p.leader_id === targetUserId || p.members?.includes(targetUserId),
     );
     if (targetInParty) {
-      setResponseStatus(event, 409);
       return { ok: false, error: "Target is already in a party" };
     }
 
-    // Check existing pending invite
     const existingInviteRes = await fetch(
       `${url}/rest/v1/party_invites?party_id=eq.${partyId}&to_user_id=eq.${targetUserId}&status=eq.pending&select=id`,
       { headers: { ...headers, Accept: "application/json" } },
     );
     const existingInvites = await existingInviteRes.json();
     if (Array.isArray(existingInvites) && existingInvites.length > 0) {
-      setResponseStatus(event, 409);
       return { ok: false, error: "Invite already sent" };
     }
 
-    // Create invite
     await fetch(`${url}/rest/v1/party_invites`, {
       method: "POST",
       headers,
@@ -105,7 +93,6 @@ export default defineEventHandler(async (event) => {
 
     return { ok: true };
   } catch (err: any) {
-    setResponseStatus(event, 500);
     return { ok: false, error: err?.message || "Failed to send invite" };
   }
 });
