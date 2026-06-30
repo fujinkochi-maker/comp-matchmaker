@@ -14,12 +14,13 @@ function getCookie(name: string): string | null {
 }
 
 function parseSession(): { user_id: string; username: string; avatar_url: string } | null {
+  if (typeof window === "undefined") return null;
   const cookie = getCookie("capl_session");
   if (!cookie) return null;
   const parts = cookie.split(".");
   if (parts.length < 2) return null;
   try {
-    const base64 = parts[0].replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = parts[0].replace(/-/g, "+").replace(/_/g, "/");
     const decoded = atob(base64);
     return JSON.parse(decoded);
   } catch {

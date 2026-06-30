@@ -20,7 +20,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { RankBadge } from "@/components/rank-badge";
 import { getPlayers, getRecentMatches, avatarUrl } from "@/lib/supabase-queries";
 import { getMapImage } from "@/lib/maps";
-import { toast } from "sonner";
 import hero from "@/assets/hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -34,7 +33,7 @@ export const Route = createFileRoute("/")({
       { title: "CAPL | Counter-Blox APL" },
       { name: "description", content: "Track ranks, ELO, stats and match history." },
       { property: "og:title", content: "CAPL | Counter-Blox APL" },
-      { property: "og:description", content: "Climb the ladder. Queue directly from Discord." },
+      { property: "og:description", content: "Climb the ladder. Queue from our website." },
     ],
   }),
   component: Home,
@@ -47,12 +46,13 @@ function getCookie(name: string): string | null {
 }
 
 function parseSession(): { user_id: string; username: string; avatar_url: string } | null {
+  if (typeof window === "undefined") return null;
   const cookie = getCookie("capl_session");
   if (!cookie) return null;
   const parts = cookie.split(".");
   if (parts.length < 2) return null;
   try {
-    const base64 = parts[0].replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = parts[0].replace(/-/g, "+").replace(/_/g, "/");
     const decoded = atob(base64);
     return JSON.parse(decoded);
   } catch {
@@ -72,7 +72,7 @@ function Home() {
     <AppShell>
       <div className="grid gap-6 p-4 lg:grid-cols-[1fr_320px] lg:p-6">
         <div className="space-y-6 min-w-0">
-          <Hero />
+          <Hero session={session} />
           <LiveStats total={total} />
           <HowItWorks />
           {recent.length > 0 && <RecentMatches matches={recent} />}
@@ -86,7 +86,11 @@ function Home() {
   );
 }
 
-function Hero() {
+function Hero({
+  session,
+}: {
+  session: { user_id: string; username: string; avatar_url: string } | null;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -113,19 +117,13 @@ function Hero() {
         </p>
         <div className="flex flex-wrap gap-3">
           {!session ? (
-            <Button
-              asChild
-              className="gap-2 bg-[#5865F2] text-white hover:bg-[#4752c4]"
-            >
+            <Button asChild className="gap-2 bg-[#5865F2] text-white hover:bg-[#4752c4]">
               <a href="/api/auth/discord">
                 <MessageCircle className="h-4 w-4" /> Connect Discord
               </a>
             </Button>
           ) : (
-            <Button
-              asChild
-              className="gap-2"
-            >
+            <Button asChild className="gap-2">
               <Link to="/queue">
                 <Swords className="h-4 w-4" /> Join Queue
               </Link>
@@ -151,7 +149,7 @@ function LiveStats({ total }: { total: number }) {
     { label: "Tracked Players", value: total, icon: Users, color: "text-success" },
     { label: "Seasons", value: "1", icon: Trophy, color: "text-chart-3" },
     { label: "Status", value: "Live", icon: Flame, color: "text-warning" },
-    { label: "Queue", value: "Discord", icon: Headphones, color: "text-primary" },
+    { label: "Queue", value: "Web", icon: Headphones, color: "text-primary" },
   ];
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -177,7 +175,12 @@ const steps = [
   {
     icon: Headphones,
     title: "Queue Up",
-    desc: "Join the Queue voice channel with 9 other players. The bot detects you automatically.",
+    desc: "Visit the Queue page on our website, sign in with Discord, and click Join.",
+  },
+  {
+    icon: Users,
+    title: "Form Parties",
+    desc: "Create a Duo or Trio in Discord — party members auto-queue together and stay on the same team.",
   },
   {
     icon: Swords,
@@ -312,7 +315,7 @@ function DiscordCard() {
       <CardContent className="space-y-3 p-4 text-center">
         <div className="text-sm font-semibold">Join the Community</div>
         <p className="text-xs text-muted-foreground">
-          Queue up, compete, and track your progress — all through Discord.
+          Queue through our website, get notifications in Discord, and track your progress.
         </p>
         <Button asChild className="w-full gap-2 bg-[#5865F2] text-white hover:bg-[#4752c4]">
           <a href="https://discord.gg/F6ZfYevYXd" target="_blank" rel="noopener noreferrer">

@@ -18,7 +18,10 @@ dist-ssr
 .env
 
 # Vercel
-.vercel/
+.vercel
+
+# Credentials (contains API keys)
+SETUP_CREDENTIALS.md
 
 # Wrangler / Cloudflare
 .wrangler/
