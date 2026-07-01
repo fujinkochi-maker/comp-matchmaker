@@ -14,10 +14,11 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  Swords, Users, LogIn, Loader2, Clock, Zap, Trophy, Target,
+  Swords, Users, LogIn, Loader2, Clock, Target,
   UserPlus, UserMinus, UserCheck, X, PartyPopper,
 } from "lucide-react";
 import { toast } from "sonner";
+import { avatarUrl } from "@/lib/supabase-queries";
 
 type QueuePlayer = {
   user_id: string;
@@ -151,7 +152,7 @@ function QueuePage() {
 
   function partyMemberAvatar(userId: string): string {
     const p = players.find((pl) => pl.user_id === userId);
-    return p?.avatar_url || "";
+    return p ? avatarUrl(p) : "";
   }
 
   async function handleJoin() {
@@ -322,42 +323,6 @@ function QueuePage() {
           )}
         </motion.div>
 
-        {/* Stats Cards */}
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Card className="border-border bg-card p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <Users className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">{count}</div>
-                <div className="text-xs text-muted-foreground">In Queue</div>
-              </div>
-            </div>
-          </Card>
-          <Card className="border-border bg-card p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
-                <Zap className="h-5 w-5 text-success" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">~2m</div>
-                <div className="text-xs text-muted-foreground">Avg Wait</div>
-              </div>
-            </div>
-          </Card>
-          <Card className="border-border bg-card p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-3/10">
-                <Trophy className="h-5 w-5 text-chart-3" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">5v5</div>
-                <div className="text-xs text-muted-foreground">Match Size</div>
-              </div>
-            </div>
-          </Card>
-        </div>
 
         {/* Invite Banners */}
         <AnimatePresence>
@@ -545,7 +510,7 @@ function QueuePage() {
                       className="flex w-full items-center gap-3 rounded-lg border border-border bg-muted/30 p-3 text-left transition-colors hover:bg-muted/50"
                     >
                       <Avatar className="h-9 w-9 border border-border">
-                        <AvatarImage src={p.avatar_url} alt={p.username} />
+                        <AvatarImage src={avatarUrl(p)} alt={p.username} />
                         <AvatarFallback>{p.username.slice(0, 2).toUpperCase()}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
@@ -647,7 +612,7 @@ function QueuePage() {
                     <div className="flex items-center gap-3">
                       <div className="relative">
                         <Avatar className="h-10 w-10 border-2 border-border">
-                          <AvatarImage src={p.avatar_url} alt={p.username} />
+                          <AvatarImage src={avatarUrl(p)} alt={p.username} />
                           <AvatarFallback>{p.username.slice(0, 2).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card bg-success" />

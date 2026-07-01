@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Bell, Search, MessageCircle, LogOut } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
+import { avatarUrl } from "@/lib/supabase-queries";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -75,7 +76,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <Bell className="h-4 w-4" />
                   </Button>
                   <Avatar className="h-8 w-8 border border-border">
-                    <AvatarImage src={session.avatar_url} alt={session.username} />
+                    <AvatarImage src={avatarUrl(session)} alt={session.username} />
                     <AvatarFallback className="bg-muted text-xs">
                       {session.username.slice(0, 2).toUpperCase()}
                     </AvatarFallback>

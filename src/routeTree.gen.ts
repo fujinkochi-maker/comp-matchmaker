@@ -9,22 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TrackRouteImport } from './routes/track'
 import { Route as QueueRouteImport } from './routes/queue'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
-import { Route as FeedRouteImport } from './routes/feed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MatchesIndexRouteImport } from './routes/matches.index'
 import { Route as PlayersUsernameRouteImport } from './routes/players.$username'
 import { Route as MatchesIdRouteImport } from './routes/matches.$id'
 
-const TrackRoute = TrackRouteImport.update({
-  id: '/track',
-  path: '/track',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const QueueRoute = QueueRouteImport.update({
   id: '/queue',
   path: '/queue',
@@ -43,11 +36,6 @@ const MatchesRoute = MatchesRouteImport.update({
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FeedRoute = FeedRouteImport.update({
-  id: '/feed',
-  path: '/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -73,23 +61,19 @@ const MatchesIdRoute = MatchesIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/feed': typeof FeedRoute
   '/leaderboard': typeof LeaderboardRoute
   '/matches': typeof MatchesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/queue': typeof QueueRoute
-  '/track': typeof TrackRoute
   '/matches/$id': typeof MatchesIdRoute
   '/players/$username': typeof PlayersUsernameRoute
   '/matches/': typeof MatchesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/feed': typeof FeedRoute
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/queue': typeof QueueRoute
-  '/track': typeof TrackRoute
   '/matches/$id': typeof MatchesIdRoute
   '/players/$username': typeof PlayersUsernameRoute
   '/matches': typeof MatchesIndexRoute
@@ -97,12 +81,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/feed': typeof FeedRoute
   '/leaderboard': typeof LeaderboardRoute
   '/matches': typeof MatchesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/queue': typeof QueueRoute
-  '/track': typeof TrackRoute
   '/matches/$id': typeof MatchesIdRoute
   '/players/$username': typeof PlayersUsernameRoute
   '/matches/': typeof MatchesIndexRoute
@@ -111,35 +93,29 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/feed'
     | '/leaderboard'
     | '/matches'
     | '/profile'
     | '/queue'
-    | '/track'
     | '/matches/$id'
     | '/players/$username'
     | '/matches/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/feed'
     | '/leaderboard'
     | '/profile'
     | '/queue'
-    | '/track'
     | '/matches/$id'
     | '/players/$username'
     | '/matches'
   id:
     | '__root__'
     | '/'
-    | '/feed'
     | '/leaderboard'
     | '/matches'
     | '/profile'
     | '/queue'
-    | '/track'
     | '/matches/$id'
     | '/players/$username'
     | '/matches/'
@@ -147,24 +123,15 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  FeedRoute: typeof FeedRoute
   LeaderboardRoute: typeof LeaderboardRoute
   MatchesRoute: typeof MatchesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   QueueRoute: typeof QueueRoute
-  TrackRoute: typeof TrackRoute
   PlayersUsernameRoute: typeof PlayersUsernameRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/track': {
-      id: '/track'
-      path: '/track'
-      fullPath: '/track'
-      preLoaderRoute: typeof TrackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/queue': {
       id: '/queue'
       path: '/queue'
@@ -191,13 +158,6 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/feed': {
-      id: '/feed'
-      path: '/feed'
-      fullPath: '/feed'
-      preLoaderRoute: typeof FeedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -246,12 +206,10 @@ const MatchesRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  FeedRoute: FeedRoute,
   LeaderboardRoute: LeaderboardRoute,
   MatchesRoute: MatchesRouteWithChildren,
   ProfileRoute: ProfileRoute,
   QueueRoute: QueueRoute,
-  TrackRoute: TrackRoute,
   PlayersUsernameRoute: PlayersUsernameRoute,
 }
 export const routeTree = rootRouteImport

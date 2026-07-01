@@ -80,9 +80,14 @@ export async function getRecentMatches(limit = 5): Promise<MatchRow[]> {
   return (data ?? []) as MatchRow[];
 }
 
-export function avatarUrl(row: PlayerRow): string {
-  if (row.avatar_url) return `https://cdn.discordapp.com/avatars/${row.discord_id}/${row.avatar_url}.png`;
-  return `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${row.discord_id}`;
+export function avatarUrl(row: { discord_id?: string; user_id?: string; avatar_url?: string | null }): string {
+  const id = row.discord_id || row.user_id || "";
+  const hash = row.avatar_url;
+  if (hash) {
+    if (hash.startsWith("http")) return hash;
+    return `https://cdn.discordapp.com/avatars/${id}/${hash}.png`;
+  }
+  return `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`;
 }
 
 export async function getPlayerByDiscordId(discordId: string): Promise<PlayerRow | null> {

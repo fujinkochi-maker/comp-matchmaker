@@ -53,9 +53,7 @@ export default defineEventHandler(async (event) => {
     const session = {
       user_id: user.id,
       username: user.global_name || user.username,
-      avatar_url: user.avatar
-        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
-        : "",
+      avatar_url: user.avatar || "",
     };
 
     const cookieVal = Buffer.from(JSON.stringify(session)).toString("base64url");

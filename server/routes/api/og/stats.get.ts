@@ -64,8 +64,10 @@ function buildCard(player: any, history: any[], rank: { name: string; color: str
   const name = player.username ?? player.discord_id;
   const trend = formatTrend(history);
   const avatarUrl = player.avatar_url
-    ? `https://cdn.discordapp.com/avatars/${player.discord_id}/${player.avatar_url}.png?size=128`
-    : `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${player.discord_id}`;
+    ? (player.avatar_url.startsWith("http")
+      ? player.avatar_url
+      : `https://cdn.discordapp.com/avatars/${player.discord_id}/${player.avatar_url}.png?size=128`)
+    : `https://cdn.discordapp.com/embed/avatars/${Number(player.discord_id) % 5}.png`;
 
   return h("div", {
     style: {

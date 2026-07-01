@@ -121,7 +121,7 @@ function ProfilePage() {
           <Card className="border-border bg-gradient-to-br from-card to-card/50 p-6">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
               <Avatar className="h-24 w-24 border-4 border-border">
-                <AvatarImage src={session.avatar_url} alt={session.username} />
+                <AvatarImage src={avatarUrl(session)} alt={session.username} />
                 <AvatarFallback className="text-2xl">
                   {session.username.slice(0, 2).toUpperCase()}
                 </AvatarFallback>

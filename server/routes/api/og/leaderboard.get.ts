@@ -15,12 +15,20 @@ const FG = "#f2f4f7";
 const MUTED = "#8b95a5";
 const ORANGE = "#f97316";
 
+function getAvatarUrl(p: any): string {
+  const hash = p.avatar_url;
+  if (!hash) return `https://cdn.discordapp.com/embed/avatars/${Number(p.discord_id) % 5}.png`;
+  if (hash.startsWith("http")) return hash;
+  return `https://cdn.discordapp.com/avatars/${p.discord_id}/${hash}.png?size=32`;
+}
+
 function playerRow(index: number, p: any) {
   const rankLabel = index < 3 ? MEDALS[index] : `#${index + 1}`;
-  const name = (p.username ?? p.discord_id).length > 22
-    ? (p.username ?? p.discord_id).slice(0, 20) + "…"
+  const name = (p.username ?? p.discord_id).length > 20
+    ? (p.username ?? p.discord_id).slice(0, 18) + "…"
     : (p.username ?? p.discord_id);
   const bg = index % 2 === 0 ? ELEVATED : "transparent";
+  const avatarSrc = getAvatarUrl(p);
 
   return h("div", {
     style: {
@@ -29,6 +37,7 @@ function playerRow(index: number, p: any) {
     }
   },
     h("span", { style: { color: index < 3 ? FG : MUTED, fontSize: 15, fontWeight: 700, width: 32, textAlign: "center" } }, rankLabel),
+    h("img", { src: avatarSrc, style: { width: 24, height: 24, borderRadius: 12, border: "1px solid #363b48" } }),
     h("span", { style: { flex: 1, color: FG, fontSize: 14, fontWeight: 600 } }, name),
     h("span", { style: { color: ORANGE, fontSize: 16, fontWeight: 800, width: 56, textAlign: "right" } }, String(p.elo)),
     h("span", { style: { color: MUTED, fontSize: 12, fontWeight: 500, width: 76, textAlign: "right" } }, `${p.wins}W ${p.losses}L`),
@@ -69,7 +78,7 @@ export default defineEventHandler(async (event) => {
     ]);
 
     const rowCount = players.length;
-    const rowHeight = 38;
+    const rowHeight = 48;
     const headerHeight = 100;
     const columnHeaderHeight = 34;
     const footerHeight = 44;
@@ -94,6 +103,7 @@ export default defineEventHandler(async (event) => {
       h("div", { style: { display: "flex", flexDirection: "column", padding: "10px 16px", gap: 2, flex: 1 } },
         h("div", { style: { display: "flex", alignItems: "center", padding: "6px 16px", gap: 12, borderBottom: `1px solid ${BORDER}`, marginBottom: 4 } },
           colHeader("#", 32, "center"),
+          h("span", { style: { width: 24 } }),
           colHeader("Player", "1fr"),
           colHeader("ELO", 56, "right"),
           colHeader("Record", 76, "right"),

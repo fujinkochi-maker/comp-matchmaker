@@ -9,7 +9,6 @@ import {
   Flame,
   Headphones,
   Map,
-  BarChart3,
   ExternalLink,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
@@ -74,7 +73,6 @@ function Home() {
         <div className="space-y-6 min-w-0">
           <Hero session={session} />
           <LiveStats total={total} />
-          <HowItWorks />
           {recent.length > 0 && <RecentMatches matches={recent} />}
         </div>
         <aside className="space-y-6">
@@ -166,54 +164,6 @@ function LiveStats({ total }: { total: number }) {
   );
 }
 
-const steps = [
-  {
-    icon: MessageCircle,
-    title: "Join Discord",
-    desc: "Be in the server during active hours and make sure you have a region role assigned.",
-  },
-  {
-    icon: Headphones,
-    title: "Queue Up",
-    desc: "Visit the Queue page on our website, sign in with Discord, and click Join.",
-  },
-  {
-    icon: Users,
-    title: "Form Parties",
-    desc: "Create a Duo or Trio in Discord — party members auto-queue together and stay on the same team.",
-  },
-  {
-    icon: Swords,
-    title: "Get Matched",
-    desc: "Teams are created and channels are spawned. Vote for a map to play.",
-  },
-  {
-    icon: BarChart3,
-    title: "Track Results",
-    desc: "Winners gain +60–100 ELO, losers lose –16–30. Watch your rank climb on the leaderboard.",
-  },
-];
-
-function HowItWorks() {
-  return (
-    <Card className="border-border bg-card p-5">
-      <div className="section-title mb-5">How It Works</div>
-      <div className="grid gap-5 sm:grid-cols-2">
-        {steps.map((s) => (
-          <div key={s.title} className="flex gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-              <s.icon className="h-5 w-5 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-sm font-semibold">{s.title}</div>
-              <p className="mt-0.5 text-xs text-muted-foreground">{s.desc}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-}
 
 function RecentMatches({ matches }: { matches: Awaited<ReturnType<typeof getRecentMatches>> }) {
   return (
